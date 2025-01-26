@@ -19,4 +19,7 @@ public class Letter {
     public void removeOccurence(){
         this.nbOccurence--;
     }
+    public String toString(){
+        return this.name + " " + this.nbOccurence;
+    }
 }

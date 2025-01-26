@@ -35,6 +35,25 @@ public class LetterBag {
         letters.add(new Letter("Y", 4, 2));
         letters.add(new Letter("Z", 10, 1));
     }
+    public static void printLetterBag(){
+        String str = new String("");
+        for(Letter l : letters){
+            str += l.toString() + "\n";
+        }
+        System.out.println(str);
+    }
+    public static int getWorldPoints(String word) {
+        int points = 0;
+        word = word.toUpperCase();
+        for (char c : word.toCharArray()) {
+            Letter l = getLetter(String.valueOf(c));
+            if (l != null){
+                points += l.getPoints();
+            }
+
+        }
+        return points;
+    }
     public static Letter getLetter(String letter) {
         for (Letter l : letters) {
             if (l.name.equals(letter)) {
