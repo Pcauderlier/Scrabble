@@ -1,4 +1,4 @@
-package GameLogic;
+package Entity;
 
 public class Letter {
     public String name;

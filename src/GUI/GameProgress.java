@@ -1,20 +1,29 @@
-package GameFrontEnd;
+package GUI;
 
-import GameLogic.LetterBag;
-import GameLogic.Player;
+import Entity.Board;
+import Entity.LetterBag;
+import Entity.Player;
+import Logic.BoardLogic;
+import Logic.PlayerLogic;
 
 import java.util.ArrayList;
 import java.util.Scanner;
 
 public class GameProgress {
-    private static Board board;
-    private static ArrayList<Player> players;
-    private static int playerIndex;
+    private Board board;
+    private PlayerLogic playerLogic;
+    private BoardLogic boardLogic;
+    private ArrayList<Player> players;
+    private int playerIndex;
     private static Scanner sc;
-    public static void startGame(){
+    public GameProgress(){
         sc = new Scanner(System.in);
+        playerLogic = new PlayerLogic();
+        playerIndex= 0;
+
+    }
+    public void startGame(){
         System.out.println("Bienvenue dans Scrabble !");
-         playerIndex= 0;
         LetterBag.initialise();
         initBoard();
         initPlayers();
@@ -26,12 +35,12 @@ public class GameProgress {
 
 
     }
-    private static void initBoard(){
-        System.out.println("Quelle est la taille de la grille souhaité (15 recommandé) ? ");
-        board = new Board(askNum());
+    private void initBoard(){
+        board = new Board();
+        boardLogic = new BoardLogic(board);
         board.printBoard();
     }
-    private static void initPlayers(){
+    private void initPlayers(){
         System.out.println("Combiens de joueurs ?");
         int nbPlayers = askNum();
         players = new ArrayList<>();
@@ -39,12 +48,15 @@ public class GameProgress {
             System.out.println("Quel est le nom du Joueur : " + (i+1));
             String name = sc.nextLine();
             Player player = new Player(name);
-            player.populateChevalet();
+            playerLogic.setPlayer(player);
+            playerLogic.populateChevalet();
+
             players.add(player);
         }
     }
-    private static boolean playerTurn(){
+    private boolean playerTurn(){
         Player currentPlayer = players.get(playerIndex);
+        playerLogic.setPlayer(currentPlayer);
         System.out.println(currentPlayer);
         String str = new String("");
         str += "Liste des actions possibles : \n";
@@ -65,7 +77,7 @@ public class GameProgress {
                 nextTurn();
                 break;
             case 2:
-                currentPlayer.tradeLetters();
+                playerLogic.tradeLetters();
                 break;
             case 3:
                 if (placeWord(currentPlayer)){
@@ -84,11 +96,18 @@ public class GameProgress {
         }
         return keepGoing;
     }
-    public static boolean placeWord(Player currentPlayer){
+    public boolean placeWord(Player currentPlayer){
         System.out.println("Veillez entrer le mot que vous voulez jouer :");
         String word = sc.nextLine().toUpperCase();
+        if (boardLogic.getIsFirstMove()){
+            boolean isOk =  boardLogic.placeWorld(word,true,8,"G",playerLogic);
+            if(isOk){
+                boardLogic.setIsFirstMove(false);
+            }
+            return isOk;
+        }
         System.out.println("Veillez entrer le sens du mot (v) -> vertical, (h) -> horizontal :");
-        String dir = sc.next().toUpperCase();
+        String dir = sc.nextLine().toUpperCase();
         while(!(dir.equals("V") || dir.equals("H"))){
             System.out.println("Veillez entrer le sens du mot (v) -> vertical, (h) -> horizontal :");
             dir = sc.nextLine().toUpperCase();
@@ -98,17 +117,23 @@ public class GameProgress {
         System.out.println("Veillez entrer la ligne (chiffre) de la premiere lettre :");
         int num = askNum();
 
-        return board.placeWorld(word,dir.equals("H"),num,letter , currentPlayer);
+        return boardLogic.placeWorld(word,dir.equals("H"),num,letter,playerLogic);
 
     }
-    private static void nextTurn(){
+    private void nextTurn(){
         int nextIndex = playerIndex + 1;
-        playerIndex = (nextIndex) > players.size() ? 0 : (nextIndex);
+        playerIndex = nextIndex >= players.size() ? 0 : nextIndex;
+        System.out.println("Player index : " + playerIndex);
+        System.out.println("playersize : " + players.size());
 
     }
     public static int askNum(){
         int i = sc.nextInt();
         sc.nextLine();
         return i;
+    }
+    public static void main (String[] args){
+        GameProgress game = new GameProgress();
+        game.startGame();
     }
 }
