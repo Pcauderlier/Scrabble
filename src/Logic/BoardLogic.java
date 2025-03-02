@@ -5,6 +5,7 @@ import Entity.Player;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 public class BoardLogic {
     private boolean isFirstMove = true;
@@ -21,7 +22,7 @@ public class BoardLogic {
     public boolean placeWorld(String word, boolean isHorizontal, int num, String letter , PlayerLogic playerLogic ){
         int letterIndex = Board.alphabet.indexOf(letter.toUpperCase());
         String[][] copiedGrid = board.getGrid();
-        ArrayList<String> chevalet = playerLogic.getChevalet();
+        List<String> chevalet = playerLogic.getChevalet();
         boolean isLegal = worldExists(word);
         try {
             if (isHorizontal && isLegal){
@@ -79,7 +80,7 @@ public class BoardLogic {
      * @param chevalet
      * @return Null quand la lettre ne rentre pas (soit parceque déja présente et pas correspondante, soit psk pas présente dans le chevalet
      */
-    private ArrayList<String> isLegal(String l,String gridL, ArrayList<String> chevalet) {
+    private List<String> isLegal(String l,String gridL, List<String> chevalet) {
         // Si le chevalet
         if (gridL.equals("-")){
             // Pas de lettre déja inscrite

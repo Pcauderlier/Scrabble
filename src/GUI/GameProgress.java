@@ -1,9 +1,11 @@
 package GUI;
 
+import Data.GameRepository;
 import Entity.Board;
 import Entity.LetterBag;
 import Entity.Player;
 import Logic.BoardLogic;
+import Logic.GameLogic;
 import Logic.PlayerLogic;
 
 import java.util.ArrayList;
@@ -13,20 +15,38 @@ public class GameProgress {
     private Board board;
     private PlayerLogic playerLogic;
     private BoardLogic boardLogic;
+    private GameLogic gameLogic;
     private ArrayList<Player> players;
     private int playerIndex;
     private static Scanner sc;
     public GameProgress(){
         sc = new Scanner(System.in);
+        gameLogic = new GameLogic(new GameRepository());
         playerLogic = new PlayerLogic();
         playerIndex= 0;
 
     }
-    public void startGame(){
+    public void home(){
         System.out.println("Bienvenue dans Scrabble !");
+        System.out.println("Voulez commencer une nouvelle partie (1) ou continuer une partie existante");
+        int num = askNum();
+        while(num != 1 || num != 2){
+            System.out.println("Voulez commencer une nouvelle partie (1) ou continuer une partie existante");
+            num = askNum();
+        }
+        if (num == 1){
+            System.out.println("Lancement d'une nouvelle partie");
+            this.startGame();
+        }
+        else if (num == 2){
+
+        }
+    }
+    public void startGame(){
         LetterBag.initialise();
-        initBoard();
         initPlayers();
+        initBoard();
+
         boolean keepGoing = true;
         while(keepGoing){
             keepGoing = playerTurn();
@@ -38,6 +58,7 @@ public class GameProgress {
     private void initBoard(){
         board = new Board();
         boardLogic = new BoardLogic(board);
+        gameLogic.createGame(board);
         board.printBoard();
     }
     private void initPlayers(){
@@ -47,8 +68,7 @@ public class GameProgress {
         for(int i = 0; i < nbPlayers; i++){
             System.out.println("Quel est le nom du Joueur : " + (i+1));
             String name = sc.nextLine();
-            Player player = new Player(name);
-            playerLogic.setPlayer(player);
+            Player player = playerLogic.initPlayer(name);
             playerLogic.populateChevalet();
 
             players.add(player);
@@ -128,9 +148,17 @@ public class GameProgress {
 
     }
     public static int askNum(){
-        int i = sc.nextInt();
-        sc.nextLine();
-        return i;
+        int num;
+        while (true) {
+            if (sc.hasNextInt()) {
+                num = sc.nextInt();
+                sc.nextLine();
+                return num;
+            } else {
+                System.out.println("Entrée invalide. Veuillez entrer un nombre entier.");
+                sc.nextLine();
+            }
+        }
     }
     public static void main (String[] args){
         GameProgress game = new GameProgress();
