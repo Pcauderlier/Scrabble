@@ -2,7 +2,10 @@ package Entity;
 
 import Entity.Letter;
 import Logic.LetterBagLogic;
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 
 public class LetterBag {
@@ -42,6 +45,21 @@ public class LetterBag {
             str += l.toString() + "\n";
         }
         System.out.println(str);
+    }
+    // Méthode pour convertir le sac de lettres en JSON
+    public static String convertLetterBagToJson() {
+        Gson gson = new Gson();
+        return gson.toJson(LetterBag.letters);
+    }
+
+    // Méthode pour transformer un JSON en LetterBag
+    public static void convertJsonToLetterBag(String json) {
+        Gson gson = new Gson();
+        Type listType = new TypeToken<ArrayList<Letter>>(){}.getType();
+        ArrayList<Entity.Letter> letterList = gson.fromJson(json, listType);
+        // Mettre à jour la liste des lettres
+        letters.clear();  // Effacer les anciennes lettres
+        letters.addAll(letterList);  // Ajouter les nouvelles lettres depuis le JSON
     }
 }
 
