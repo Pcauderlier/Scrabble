@@ -1,5 +1,9 @@
 package Data;
 
+import Entity.Board;
+import Entity.Game;
+import Entity.LetterBag;
+
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -82,5 +86,30 @@ public class GameRepository {
 
         }
         return game;
+    }
+    public void updateGame(Game game, boolean active){
+        String board = game.getBoard().convertBoardToJson();
+        int currentPlayerindex = game.getPlayerIndex();
+        String letterbag = LetterBag.convertLetterBagToJson();
+
+        PreparedStatement stmt = null;
+        Connection conn = Conexion.getConnection();
+        try{
+            String Statement = "UPDATE Game SET BOARD = ? , CURRENT_PLAYER_INDEX = ? , LETTER_BAG = ? , IS_ACTIVE = ? WHERE ID = ?";
+            stmt = conn.prepareStatement(Statement);
+            stmt.setString(1, board);
+            stmt.setInt(2, currentPlayerindex);
+            stmt.setString(3, letterbag);
+            stmt.setBoolean(4, active);
+            stmt.setInt(5, game.getGameID());
+            stmt.executeUpdate();
+        }
+        catch(Exception e){
+            System.out.println(e.getMessage());
+        }
+        finally{
+            Conexion.closeEverything(stmt,null);
+        }
+
     }
 }

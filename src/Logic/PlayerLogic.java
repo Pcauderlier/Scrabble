@@ -5,6 +5,7 @@ import Entity.Player;
 import Entity.Chevalet;
 import GUI.GameProgress;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class PlayerLogic {
@@ -86,5 +87,13 @@ public class PlayerLogic {
 
         populateChevalet();
         System.out.println(chevalet.afficher());
+    }
+    public void updatePlayerPoints(){
+        playerRepository.updatePlayer(currentPlayer);
+    }
+    public ArrayList<Player> loadPlayers(int gameId){
+        ArrayList<Player> players = playerRepository.getGamePlayers(gameId);
+
+        return players;
     }
 }

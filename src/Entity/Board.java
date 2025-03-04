@@ -1,4 +1,6 @@
 package Entity;
+import com.google.gson.Gson;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 
@@ -63,5 +65,14 @@ public class Board {
             }
         }
         System.out.println();
+    }
+    public String convertBoardToJson(){
+        Gson gson = new Gson();
+        return gson.toJson(grid);
+    }
+    public  void convertJsonToBoard(String jsonBoard){
+        Gson gson = new Gson();
+        String[][] grid = gson.fromJson(jsonBoard, String[][].class);
+        setGrid(grid);
     }
 }

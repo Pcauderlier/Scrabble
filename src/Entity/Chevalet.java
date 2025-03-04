@@ -1,5 +1,7 @@
 package Entity;
 
+import com.google.gson.Gson;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -38,6 +40,15 @@ public class Chevalet {
 
     public int taille() {
         return lettres.size();
+    }
+
+    public String chevaletToJson(){
+        Gson gson = new Gson();
+        return gson.toJson(lettres);
+    }
+    public void jsonToChevalet(String json){
+        Gson gson = new Gson();
+        update( gson.fromJson(json, ArrayList.class));
     }
 
     public String afficher() {

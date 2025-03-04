@@ -8,8 +8,8 @@ import Entity.LetterBag;
 import Entity.Player;
 import GUI.GameProgress;
 import com.google.gson.Gson;
-import com.mysql.cj.xdevapi.JsonParser;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -19,33 +19,25 @@ public class GameLogic {
     private GameRepository gameRepository;
     private BoardLogic boardLogic;
     private PlayerLogic playerLogic;
-    private PlayerGameRepository playerGameRepository;
+    private PlayerGameService playerGameService;
     private Scanner sc;
     private final Game game;
 
     public GameLogic(Game game){
         gameRepository = new GameRepository();
         playerLogic = new PlayerLogic();
-        playerGameRepository = new PlayerGameRepository();
+        playerGameService = new PlayerGameService();
         this.game = game;
         sc = new Scanner(System.in);
     }
     public void createGame(Board board){
-        String jsonBoard = convertBoardToJson(board);
+        String jsonBoard = board.convertBoardToJson();
         String letterBag = LetterBag.convertLetterBagToJson();
         int gameId = gameRepository.createGame(jsonBoard, letterBag);
         game.setBoard(board);
         game.setGameID(gameId);
     }
-    private String convertBoardToJson(Board board){
-        Gson gson = new Gson();
-        return gson.toJson(board.getGrid());
-    }
-    private  String[][] ConvertJsonToBoard(String jsonBoard){
-        Gson gson = new Gson();
-        String[][] grid = gson.fromJson(jsonBoard, String[][].class);
-        return grid;
-    }
+
     public List<Integer> getGameIDs(){
         return gameRepository.getGameIDs();
     }
@@ -53,7 +45,9 @@ public class GameLogic {
         initBoard();
         LetterBag.initialise();
         createGame(game.getBoard());
+        initPlayers();
         startGame();
+
     }
     public void loadGame(){
         List<Integer> gameIds = getGameIDs();
@@ -75,21 +69,26 @@ public class GameLogic {
                 return;
             }
             game.setGameID(id);
-            String[][] grid = ConvertJsonToBoard((String) gameData.get("board"));
-            game.getBoard().setGrid(grid);
+            Board board = new Board();
+            board.convertJsonToBoard((String) gameData.get("board"));
+            game.setBoard(board);
+            boardLogic = new BoardLogic(board);
+            board.printBoard();
             LetterBag.convertJsonToLetterBag((String) gameData.get("letterBag"));
-            game.setPlayerIndex((Integer) gameData.get("playerIndex"));
+            game.setPlayerIndex((Integer) gameData.get("currentPlayer"));
+            ArrayList<Player> players = playerLogic.loadPlayers(id);
+            game.setPlayers(players);
             startGame();
+
         }
     }
     private void initBoard(){
         Board board = new Board();
         boardLogic = new BoardLogic(board);
-        createGame(board);
+        game.setBoard(board);
         board.printBoard();
     }
     public void startGame(){
-        initPlayers();
         boolean keepGoing = true;
         while(keepGoing){
             keepGoing = playerTurn();
@@ -119,8 +118,8 @@ public class GameLogic {
          * update game avec le board et le letterbag
          *
          */
-
-
+        playerGameService.upsertPlayerGame(game);
+        gameRepository.updateGame(game,true);
         game.nextTurn();
 
     }
@@ -130,6 +129,12 @@ public class GameLogic {
          * Update le score Tot du joueur
          * mettre la game en active = false
          */
+        for (Player player : game.getPlayers()){
+            playerLogic.setPlayer(player);
+            playerLogic.updatePlayerPoints();
+        }
+        gameRepository.updateGame(game,false);
+
     }
     private boolean playerTurn(){
         Player currentPlayer = game.getCurrentPlayer();
@@ -169,7 +174,7 @@ public class GameLogic {
                 game.getBoard().printBoard();
                 break;
             case 6:
-
+                endGame();
                 break;
             default:
                 break;

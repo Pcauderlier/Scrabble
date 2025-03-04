@@ -15,6 +15,30 @@ public class Player {
         this.chevalet = new Chevalet();
     }
 
+    public int getPlayerId() {
+        return playerId;
+    }
+
+    public void setPlayerId(int playerId) {
+        this.playerId = playerId;
+    }
+
+    public int getGlobalScore() {
+        return globalScore;
+    }
+
+    public void setGlobalScore(int globalScore) {
+        this.globalScore = globalScore;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
     public void setScore(int score) {
         this.score = score;
     }
