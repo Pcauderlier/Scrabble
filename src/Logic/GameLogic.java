@@ -73,6 +73,7 @@ public class GameLogic {
             board.convertJsonToBoard((String) gameData.get("board"));
             game.setBoard(board);
             boardLogic = new BoardLogic(board);
+            boardLogic.setIsFirstMove(false);
             board.printBoard();
             LetterBag.convertJsonToLetterBag((String) gameData.get("letterBag"));
             game.setPlayerIndex((Integer) gameData.get("currentPlayer"));

@@ -94,7 +94,7 @@ public class BoardLogic {
         }
         else if (!gridL.equals(l)){
 //             Déja une lettre et elle correspond pas a celle rechercher dans le mot
-            System.out.println("NULL 2 : (gridL = " + gridL + " / l = " + l);
+            System.out.println("NULL 2 : (gridL = " + gridL + " / l = " + l + ")");
             return null;
         }
 
