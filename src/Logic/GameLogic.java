@@ -126,10 +126,7 @@ public class GameLogic {
     }
     private void endGame(){
         System.out.println("Fin de la partie");
-        /**
-         * Update le score Tot du joueur
-         * mettre la game en active = false
-         */
+
         for (Player player : game.getPlayers()){
             playerLogic.setPlayer(player);
             playerLogic.updatePlayerPoints();
@@ -175,6 +172,7 @@ public class GameLogic {
                 game.getBoard().printBoard();
                 break;
             case 6:
+                keepGoing = false;
                 endGame();
                 break;
             default:

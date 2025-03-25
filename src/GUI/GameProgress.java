@@ -40,6 +40,7 @@ public class GameProgress {
         if (num == 1){
             gameLogic.newGame();
 
+
         }
         else if (num == 2){
             gameLogic.loadGame();

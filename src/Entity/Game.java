@@ -54,8 +54,5 @@ public class Game {
     public void nextTurn(){
         int nextIndex = playerIndex + 1;
         playerIndex = nextIndex >= players.size() ? 0 : nextIndex;
-        System.out.println("Player index : " + playerIndex);
-        System.out.println("playersize : " + players.size());
-
     }
 }

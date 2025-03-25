@@ -62,6 +62,8 @@ public class PlayerRepository {
             stmt = conn.prepareStatement(statement);
             stmt.setInt(1, scoreTot);
             stmt.setInt(2,player.getPlayerId());
+            stmt.executeUpdate();
+
         }
         catch(Exception e){
             System.out.printf(e.getMessage());
